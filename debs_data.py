@@ -4,10 +4,10 @@ import rdflib
 import pandas as pd
 
 
-def get_sensor_data_array(filename, machine_id, only_anomalies=False, anomaly_filename=None):
+def get_sensor_data_array(filename, machine_id, anomalies='include', anomaly_filename=None):
     csv_list = []
 
-    if only_anomalies:
+    if anomalies != 'include':
         anomaly_timestamp_list = get_anomaly_timestamp_list(filename=anomaly_filename, machine_id=machine_id)
 
     with open('MachineData/' + filename, newline='') as csvfile:
@@ -30,8 +30,9 @@ def get_sensor_data_array(filename, machine_id, only_anomalies=False, anomaly_fi
 
         for index, row in df.iterrows():
 
-            #Wenn nur Anomlien gewünscht: "Nicht-Anomalien" auslassen
-            if only_anomalies and index not in anomaly_timestamp_list:
+            if anomalies == 'only' and index not in anomaly_timestamp_list:
+                continue
+            if anomalies == 'exclude' and index in anomaly_timestamp_list:
                 continue
 
             #Werte in float umwandeln
@@ -49,7 +50,7 @@ def get_anomaly_array(filename, machine_id, sensor_data_count):
         if i in anomaly_timestamp_list:
             anomaly_list.append(1)
         else:
-            anomaly_list.append(0)
+            anomaly_list.append(-1)
 
     return np.array(anomaly_list)
 

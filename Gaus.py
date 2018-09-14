@@ -5,13 +5,14 @@ import debs_data as data
 import numpy as np
 
 
-sensor_data = data.get_sensor_data_array('molding_machine_5000dp.csv', machine_id=59)
+sensor_data = data.get_sensor_data_array('molding_machine_5000dp.csv', machine_id=59, anomalies='exclude',
+                                         anomaly_filename='molding_machine_5000dp.anomalies.nt')
 anomaly_labels = data.get_anomaly_array('molding_machine_5000dp.anomalies.nt', machine_id=59,
                                           sensor_data_count=len(sensor_data))
 
 
 sensor_data_only_anomalies = data.get_sensor_data_array('molding_machine_5000dp.csv', machine_id=59,
-                                                        only_anomalies=True,
+                                                        anomalies='only',
                                                         anomaly_filename='molding_machine_5000dp.anomalies.nt')
 
 for i in range(20, 81, 20):
