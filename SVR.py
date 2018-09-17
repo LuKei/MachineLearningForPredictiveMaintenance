@@ -4,7 +4,7 @@ import threading
 from queue import Queue
 import numpy as np
 
-max_RUL = 90
+max_RUL = 110
 X_train, X_valid, y_train, y_valid = data.get_sensor_data('train_FD001.csv', 'valid_FD001.csv',
                                                         'valid_RUL_FD001.csv', maximum_RUL=max_RUL)
 mean = X_train.mean(axis=0)
