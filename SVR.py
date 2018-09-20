@@ -3,14 +3,17 @@ import cmapss_data as data
 import threading
 from queue import Queue
 import numpy as np
+import pickle
 
 max_RUL = 110
-X_train, X_valid, y_train, y_valid = data.get_sensor_data('train_FD001.csv', 'valid_FD001.csv',
-                                                        'valid_RUL_FD001.csv', maximum_RUL=max_RUL)
+X_train, X_valid, X_test, y_train, y_valid, y_test = data.get_data_train_valid('train_FD001.csv', 'valid_FD001.csv',
+                                                                                'valid_RUL_FD001.csv', 'test_FD001.csv',
+                                                                                'test_RUL_FD001.csv', maximum_RUL=max_RUL)
 mean = X_train.mean(axis=0)
 std = X_train.std(axis=0)
 X_train = (X_train - mean) / std
 X_valid = (X_valid - mean) / std
+X_test = (X_test - mean) / std
 
 hyper_param_list = []
 data_read_lock = threading.Lock()
@@ -79,5 +82,6 @@ for item in hyper_param_list:
 
 print(best_hyper_param)
 
-
-
+clf = svm.SVR(kernel='rbf', C=best_hyper_param[0], gamma=best_hyper_param[1])
+clf.fit(X_train, y_train)
+pickle.dump(clf, open('pickles/SVR.p', 'wb'))

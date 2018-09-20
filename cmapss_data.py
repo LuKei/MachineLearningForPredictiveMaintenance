@@ -2,9 +2,12 @@ import math
 import numpy as np
 import pandas as pd
 
-def get_sensor_data(filename_train, filename_test, filename_RUL, maximum_RUL=90, window_size=4):
+def get_data_train_valid(filename_train, filename_valid, filename_RUL_valid, filename_test, filename_RUL_test,
+                         maximum_RUL=90, window_size=4):
     X_train = None
     y_train = None
+    X_valid = None
+    y_valid = None
     X_test = None
     y_test = None
     columns_to_exclude = [0,1,2,3,4,5,6,7,9,10,13,14,18,19,20,21,22,23,24,25]
@@ -29,14 +32,60 @@ def get_sensor_data(filename_train, filename_test, filename_RUL, maximum_RUL=90,
 
         df.drop(labels=columns_to_exclude, axis='columns', inplace=True)
 
-        #Spalten, die nur einen Wert haben entfernen
-        # for col in df.columns:
-        #     if len(df[col].unique().tolist()) < 2:
-        #         columns_to_exclude.append(col)
-        # df.drop(labels=columns_to_exclude, axis='columns', inplace=True)
-
         X_train = df.values
 
+    with open('MachineData/' + filename_valid, newline='') as csvfile:
+        df = pd.read_csv(csvfile, header=None, names=range(26))
+        df_valid = pd.DataFrame(columns=df.columns, dtype=float)
+
+        mean_series_last_values = []
+        for unit_num in df[0].unique():
+            mean5_series = df[df[0] == unit_num].tail(window_size).sum(axis='index') / window_size
+            df_valid = df_valid.append(mean5_series, ignore_index=True)
+
+        df_valid.drop(labels=columns_to_exclude, axis='columns', inplace=True)
+
+        X_valid = df_valid.values
+
+    with open('MachineData/' + filename_RUL_valid, newline='') as csvfile:
+        df = pd.read_csv(csvfile, header=None)
+
+        y_valid = []
+        for row in df.itertuples():
+            y_valid.append(row[1] + window_size / 2)
+
+        y_valid = np.array(y_valid)
+
+
+
+    with open('MachineData/' + filename_test, newline='') as csvfile:
+        df = pd.read_csv(csvfile, header=None, names=range(26))
+        df_test = pd.DataFrame(columns=df.columns, dtype=float)
+
+        mean_series_last_values = []
+        for unit_num in df[0].unique():
+            mean5_series = df[df[0] == unit_num].tail(window_size).sum(axis='index') / window_size
+            df_test = df_test.append(mean5_series, ignore_index=True)
+
+            df_test.drop(labels=columns_to_exclude, axis='columns', inplace=True)
+
+        X_test = df_test.values
+
+    with open('MachineData/' + filename_RUL_test, newline='') as csvfile:
+        df = pd.read_csv(csvfile, header=None)
+
+        y_test = []
+        for row in df.itertuples():
+            y_test.append(row[1] + window_size / 2)
+
+        y_test = np.array(y_test)
+
+
+    return X_train, X_valid, X_test, y_train, y_valid, y_test
+
+
+def get_data_test(filename_test, filename_RUL_test, window_size=4):
+    columns_to_exclude = [0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 13, 14, 18, 19, 20, 21, 22, 23, 24, 25]
     with open('MachineData/' + filename_test, newline='') as csvfile:
         df = pd.read_csv(csvfile, header=None, names=range(26))
         df_test = pd.DataFrame(columns=df.columns, dtype=float)
@@ -50,16 +99,13 @@ def get_sensor_data(filename_train, filename_test, filename_RUL, maximum_RUL=90,
 
         X_test = df_test.values
 
-    with open('MachineData/' + filename_RUL, newline='') as csvfile:
-        df = pd.read_csv(csvfile, header=None)
+    with open('MachineData/' + filename_RUL_test, newline='') as csvfile:
+        df_test_RUL = pd.read_csv(csvfile, header=None)
 
         y_test = []
-        for row in df.itertuples():
+        for row in df_test_RUL.itertuples():
             y_test.append(row[1] + window_size / 2)
 
         y_test = np.array(y_test)
 
-
-    return X_train, X_test, y_train, y_test
-
-
+    return X_test, y_test

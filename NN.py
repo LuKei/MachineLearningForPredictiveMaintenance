@@ -5,7 +5,7 @@ import cmapss_data as data
 import numpy as np
 
 
-X_train, X_test, y_train, y_test = data.get_sensor_data('train_FD001.csv','test_FD001.csv', 'RUL_FD001.csv')
+X_train, X_test, y_train, y_test = data.get_data_train_valid('train_FD001.csv', 'test_FD001.csv', 'RUL_FD001.csv')
 mean = X_train.mean(axis=0)
 std = X_train.std(axis=0)
 X_train = (X_train - mean) / std

@@ -3,10 +3,12 @@ import cmapss_data as data
 import threading
 from queue import Queue
 import numpy as np
+import pickle
 
-max_RUL = 110
-X_train, X_valid, y_train, y_valid = data.get_sensor_data('train_FD001.csv', 'valid_FD001.csv',
-                                                        'valid_RUL_FD001.csv', maximum_RUL=max_RUL)
+max_RUL = 100
+X_train, X_valid, X_test, y_train, y_valid, y_test = data.get_data_train_valid('train_FD001.csv', 'valid_FD001.csv',
+                                                                                'valid_RUL_FD001.csv', 'test_FD001.csv',
+                                                                                'test_RUL_FD001.csv', maximum_RUL=max_RUL)
 mean = X_train.mean(axis=0)
 std = X_train.std(axis=0)
 X_train = (X_train - mean) / std
@@ -51,7 +53,7 @@ def threader():
         q.task_done()
 
 #Alle Threads starten
-for i in range(4):
+for i in range(12):
     t = threading.Thread(target=threader)
     t.daemon = True
     t.start()
@@ -75,6 +77,12 @@ for item in hyper_param_list:
         best_hyper_param = item
 
 print(best_hyper_param)
+
+
+#Save the best model as pickle
+clf = neural_network.MLPRegressor(hidden_layer_sizes=(best_hyper_param[0], best_hyper_param[1]), max_iter=500)
+clf.fit(X_train, y_train)
+pickle.dump(clf, open('pickles/MLP.p', 'wb'))
 
 
 
