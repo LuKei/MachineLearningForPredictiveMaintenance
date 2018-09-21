@@ -2,8 +2,8 @@ from sklearn import neural_network, metrics
 import cmapss_data as data
 import threading
 from queue import Queue
-import numpy as np
 import pickle
+import multiprocessing
 
 max_RUL = 100
 X_train, X_valid, X_test, y_train, y_valid, y_test = data.get_data_train_valid('train_FD001.csv', 'valid_FD001.csv',
@@ -53,7 +53,7 @@ def threader():
         q.task_done()
 
 #Alle Threads starten
-for i in range(12):
+for i in range(multiprocessing.cpu_count()):
     t = threading.Thread(target=threader)
     t.daemon = True
     t.start()
@@ -82,7 +82,7 @@ print(best_hyper_param)
 #Save the best model as pickle
 clf = neural_network.MLPRegressor(hidden_layer_sizes=(best_hyper_param[0], best_hyper_param[1]), max_iter=500)
 clf.fit(X_train, y_train)
-pickle.dump(clf, open('pickles/MLP.p', 'wb'))
+pickle.dump(clf, open('pickles/MLP_' & str(max_RUL) & '_max_RUL.p', 'wb'))
 
 
 

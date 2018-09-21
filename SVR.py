@@ -4,16 +4,16 @@ import threading
 from queue import Queue
 import numpy as np
 import pickle
+import multiprocessing
 
-max_RUL = 110
-X_train, X_valid, X_test, y_train, y_valid, y_test = data.get_data_train_valid('train_FD001.csv', 'valid_FD001.csv',
-                                                                                'valid_RUL_FD001.csv', 'test_FD001.csv',
-                                                                                'test_RUL_FD001.csv', maximum_RUL=max_RUL)
+max_RUL = 99999
+X_train, y_train = data.get_train_data('train_FD001.csv', maximum_RUL=max_RUL)
+X_valid, y_valid = data.get_valid_test_data('valid_FD001.csv', 'valid_RUL_FD001.csv')
+
 mean = X_train.mean(axis=0)
 std = X_train.std(axis=0)
 X_train = (X_train - mean) / std
 X_valid = (X_valid - mean) / std
-X_test = (X_test - mean) / std
 
 hyper_param_list = []
 data_read_lock = threading.Lock()
@@ -56,7 +56,7 @@ def threader():
         q.task_done()
 
 #Alle Threads starten
-for i in range(12):
+for i in range(multiprocessing.cpu_count()):
     t = threading.Thread(target=threader)
     t.daemon = True
     t.start()
@@ -84,4 +84,4 @@ print(best_hyper_param)
 
 clf = svm.SVR(kernel='rbf', C=best_hyper_param[0], gamma=best_hyper_param[1])
 clf.fit(X_train, y_train)
-pickle.dump(clf, open('pickles/SVR.p', 'wb'))
+pickle.dump(clf, open('pickles/SVR_' + str(max_RUL) + '_max_RUL.p', 'wb'))
