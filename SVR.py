@@ -6,7 +6,7 @@ import numpy as np
 import pickle
 import multiprocessing
 
-max_RUL = 99999
+max_RUL = 110
 X_train, y_train = data.get_train_data('train_FD001.csv', maximum_RUL=max_RUL)
 X_valid, y_valid = data.get_valid_test_data('valid_FD001.csv', 'valid_RUL_FD001.csv')
 

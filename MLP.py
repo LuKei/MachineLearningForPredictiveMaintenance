@@ -5,10 +5,10 @@ from queue import Queue
 import pickle
 import multiprocessing
 
-max_RUL = 100
-X_train, X_valid, X_test, y_train, y_valid, y_test = data.get_data_train_valid('train_FD001.csv', 'valid_FD001.csv',
-                                                                                'valid_RUL_FD001.csv', 'test_FD001.csv',
-                                                                                'test_RUL_FD001.csv', maximum_RUL=max_RUL)
+max_RUL = 99999
+X_train, y_train = data.get_train_data('train_FD001.csv', maximum_RUL=max_RUL)
+X_valid, y_valid = data.get_valid_test_data('valid_FD001.csv', 'valid_RUL_FD001.csv')
+
 mean = X_train.mean(axis=0)
 std = X_train.std(axis=0)
 X_train = (X_train - mean) / std
@@ -28,11 +28,11 @@ def calc_mlp(neuron_count_1, neuron_count_2):
     clf.fit(X_train, y_train)
     train_mae = metrics.mean_absolute_error(y_train,clf.predict(X_train))
     train_mse = metrics.mean_squared_error(y_train, clf.predict(X_train))
-    test_mae = metrics.mean_absolute_error(y_valid,clf.predict(X_valid))
-    test_mse = metrics.mean_squared_error(y_valid, clf.predict(X_valid))
+    valid_mae = metrics.mean_absolute_error(y_valid,clf.predict(X_valid))
+    valid_mse = metrics.mean_squared_error(y_valid, clf.predict(X_valid))
 
     with hyper_param_list_lock:
-        hyper_param_list.append((neuron_count_1, neuron_count_2, train_mae, train_mse, test_mae, test_mse))
+        hyper_param_list.append((neuron_count_1, neuron_count_2, train_mae, train_mse, valid_mae, valid_mse))
 
     with print_lock:
         iter += 1
@@ -42,8 +42,8 @@ def calc_mlp(neuron_count_1, neuron_count_2):
         print('max RUL: ' + str(max_RUL))
         print('\t' + 'Train Mean Absolute Error: ' + str(train_mae))
         print('\t' + 'Train Mean Squared Error: ' + str(train_mse))
-        print('\t' + 'Test Mean Absolute Error: ' + str(test_mae))
-        print('\t' + 'Test Mean Squared Error: ' + str(test_mse))
+        print('\t' + 'Test Mean Absolute Error: ' + str(valid_mae))
+        print('\t' + 'Test Mean Squared Error: ' + str(valid_mse))
         print('\n')
 
 def threader():
@@ -82,7 +82,7 @@ print(best_hyper_param)
 #Save the best model as pickle
 clf = neural_network.MLPRegressor(hidden_layer_sizes=(best_hyper_param[0], best_hyper_param[1]), max_iter=500)
 clf.fit(X_train, y_train)
-pickle.dump(clf, open('pickles/MLP_' & str(max_RUL) & '_max_RUL.p', 'wb'))
+pickle.dump(clf, open('pickles/MLP_' + str(max_RUL) + '_max_RUL.p', 'wb'))
 
 
 
