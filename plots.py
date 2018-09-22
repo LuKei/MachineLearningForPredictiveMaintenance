@@ -31,7 +31,7 @@ def plot_sensors(df_train_unit_x):
 
     #plt.show()
 
-    plt.savefig(fname='Abbildungen/Sensoren.png', format='png')
+    plt.savefig(fname='figures/Sensoren.png', format='png')
 
 
 def plot_sensor8_with_exp(df_train_unit_x):
@@ -50,4 +50,31 @@ def plot_sensor8_with_exp(df_train_unit_x):
 
     plt.show()
 
-plot_sensor8_with_exp(df_train_unit0)
+# plot_sensor8_with_exp(df_train_unit0)
+
+
+def plot_results():
+    plt.figure(figsize=(20, 20))
+    plt.xlabel('Versatz Vorhersagezeitfenster')
+    plt.ylabel('Mittlerer quadratischer Fehler')
+
+    flg_x_plotted = False
+    legend_labels = []
+    max_RULs = [90,100,110,99999]
+    for max_RUL in max_RULs:
+        df_SVR = pd.read_csv('results/SVR_' + str(max_RUL) + '_max_RUL.csv', sep=';', decimal=',')
+        df_MLP = pd.read_csv('results/MLP_' + str(max_RUL) + '_max_RUL.csv', sep=';', decimal=',')
+        plt.plot(df_SVR.offset, df_SVR.mse)
+        legend_labels.append('SVR max RUL ' + str(max_RUL))
+        plt.plot(df_MLP.offset, df_MLP.mse)
+        legend_labels.append('MLP max RUL ' + str(max_RUL))
+
+    plt.gca().xaxis.set_major_locator(plt.MaxNLocator(12))
+    plt.gca().yaxis.set_major_locator(plt.MaxNLocator(10))
+    plt.legend(legend_labels)
+
+    plt.savefig(fname='figures/Ergebnisse_Valid.png', format='png')
+    plt.show()
+
+plot_results()
+
