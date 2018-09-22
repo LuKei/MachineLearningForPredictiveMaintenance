@@ -55,7 +55,7 @@ def plot_sensor8_with_exp(df_train_unit_x):
 
 def plot_results():
     plt.figure(figsize=(20, 20))
-    plt.xlabel('Versatz Vorhersagezeitfenster')
+    plt.xlabel('Verschiebung Vorhersagezeitfenster')
     plt.ylabel('Mittlerer quadratischer Fehler')
 
     flg_x_plotted = False
@@ -76,5 +76,15 @@ def plot_results():
     plt.savefig(fname='figures/Ergebnisse_Valid.png', format='png')
     plt.show()
 
-plot_results()
+# plot_results()
+
+def plot_piece_wise_rul():
+    plt.figure(figsize=(20, 20))
+    plt.xlabel('Zeit in Zyklen')
+    plt.ylabel('Remaining Useful Lifetime (RUL)')
+    plt.plot([0,100,200],[100,100,0])
+    plt.savefig(fname='figures/max_RUL.png', format='png')
+    plt.show()
+
+plot_piece_wise_rul()
 
