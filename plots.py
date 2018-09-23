@@ -54,9 +54,9 @@ def plot_sensor8_with_exp(df_train_unit_x):
 
 
 def plot_results():
-    plt.figure(figsize=(20, 20))
-    plt.xlabel('Verschiebung Vorhersagezeitfenster')
-    plt.ylabel('Mittlerer quadratischer Fehler')
+    plt.figure(figsize=(20, 15))
+    plt.xlabel('Verschiebung Vorhersagezeitfenster', fontsize=14)
+    plt.ylabel('Mittlerer quadratischer Fehler', fontsize=14)
 
     flg_x_plotted = False
     legend_labels = []
@@ -71,7 +71,8 @@ def plot_results():
 
     plt.gca().xaxis.set_major_locator(plt.MaxNLocator(12))
     plt.gca().yaxis.set_major_locator(plt.MaxNLocator(10))
-    plt.legend(legend_labels)
+    plt.gca().tick_params(labelsize=14)
+    plt.legend(legend_labels, fontsize=14)
 
     plt.savefig(fname='figures/Ergebnisse_Valid.png', format='png')
     plt.show()
@@ -79,12 +80,13 @@ def plot_results():
 # plot_results()
 
 def plot_piece_wise_rul():
-    plt.figure(figsize=(20, 20))
-    plt.xlabel('Zeit in Zyklen')
-    plt.ylabel('Remaining Useful Lifetime (RUL)')
+    plt.figure(figsize=(20, 10))
+    plt.xlabel('Zeit in Zyklen', fontsize=14)
+    plt.ylabel('Remaining Useful Lifetime (RUL)', fontsize=14)
     plt.plot([0,100,200],[100,100,0])
+    plt.gca().tick_params(labelsize=14)
     plt.savefig(fname='figures/max_RUL.png', format='png')
     plt.show()
 
-plot_piece_wise_rul()
+#plot_piece_wise_rul()
 
