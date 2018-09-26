@@ -1,6 +1,8 @@
 import pandas as pd
 from matplotlib import pyplot as plt
 import numpy as np
+import random as rd
+from mpl_toolkits.mplot3d import Axes3D
 
 
 with open('MachineData/' + 'train_FD001.csv', newline='') as csvfile:
@@ -89,4 +91,60 @@ def plot_piece_wise_rul():
     plt.show()
 
 #plot_piece_wise_rul()
+
+
+def plot_SVM_kernel_trick():
+    #create circle coordinates with some noise
+    x1_list = []
+    x2_list = []
+    y1_list = []
+    y2_list = []
+    z1_list = []
+    z2_list = []
+    r1 = 0.4
+    r2 = 1
+    for i in range(0, 360):
+        x1 = np.cos(i) * r1 + rd.randint(0, 5) / 20
+        x2 = np.cos(i) * r2 + rd.randint(0, 5) / 20
+        y1 = np.sin(i) * r1 + rd.randint(0, 5) / 20
+        y2 = np.sin(i) * r2 + rd.randint(0, 5) / 20
+        z1 = np.sqrt(x1 ** 2 + y1 ** 2)
+        z2 = np.sqrt(x2 ** 2 + y2 ** 2)
+        x1_list.append(x1)
+        x2_list.append(x2)
+        y1_list.append(y1)
+        y2_list.append(y2)
+        z1_list.append(z1)
+        z2_list.append(z2)
+
+
+    #plot 2D
+    plt.figure(figsize=(10, 10))
+    plt.subplot(111)
+    plt.gca().tick_params(labelsize=14)
+    plt.gca().set_title('Daten projeziert im Vektorraum R2')
+    plt.plot(x1_list, y1_list, 'ro')
+    plt.plot(x2_list, y2_list, 'bo')
+    plt.gca().set_aspect('equal', 'datalim')
+    plt.xlabel('x', fontsize=14)
+    plt.ylabel('y', fontsize=14)
+
+
+    #plot 3D
+    fig = plt.figure(figsize=(10, 10))
+    ax = fig.add_subplot(111, projection='3d')
+    plt.gca().tick_params(labelsize=14)
+    plt.gca().set_title('Daten projeziert im Vektorraum R3')
+    plt.plot(x1_list, y1_list, z1_list, 'ro')
+    plt.plot(x2_list, y2_list, z2_list, 'bo')
+    plt.gca().set_aspect('equal', 'datalim')
+    ax.set_xlabel('x', fontsize=14)
+    ax.set_ylabel('y', fontsize=14)
+    ax.set_zlabel('\u221ax\xb2+y\xb2', fontsize=14)
+
+    plt.show()
+
+plot_SVM_kernel_trick()
+
+
 
