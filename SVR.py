@@ -6,9 +6,9 @@ import numpy as np
 import pickle
 import multiprocessing
 
-max_RUL = 110
+max_RUL = 90
 X_train, y_train = data.get_train_data('train_FD001.csv', maximum_RUL=max_RUL)
-X_valid, y_valid = data.get_valid_test_data('valid_FD001.csv', 'valid_RUL_FD001.csv')
+X_valid, y_valid = data.get_valid_test_data('valid_FD001.csv', 'valid_RUL_FD001.csv', maximum_RUL=max_RUL)
 
 mean = X_train.mean(axis=0)
 std = X_train.std(axis=0)
@@ -61,8 +61,8 @@ for i in range(multiprocessing.cpu_count()):
     t.daemon = True
     t.start()
 
-C_vals = np.linspace(start=2**-5, stop=2**3, num=10)
-gamma_vals = np.linspace(start=2**-5, stop=2**3, num=10)
+C_vals = np.linspace(start=2**-5, stop=2**4, num=10)
+gamma_vals = np.linspace(start=2**-5, stop=2**4, num=10)
 for i in range(len(C_vals)):
     for j in range(len(gamma_vals)):
         C = C_vals[i]

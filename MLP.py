@@ -5,9 +5,9 @@ from queue import Queue
 import pickle
 import multiprocessing
 
-max_RUL = 99999
+max_RUL = 90
 X_train, y_train = data.get_train_data('train_FD001.csv', maximum_RUL=max_RUL)
-X_valid, y_valid = data.get_valid_test_data('valid_FD001.csv', 'valid_RUL_FD001.csv')
+X_valid, y_valid = data.get_valid_test_data('valid_FD001.csv', 'valid_RUL_FD001.csv', maximum_RUL=max_RUL)
 
 mean = X_train.mean(axis=0)
 std = X_train.std(axis=0)
@@ -58,8 +58,8 @@ for i in range(multiprocessing.cpu_count()):
     t.daemon = True
     t.start()
 
-neuron_count_1_vals = [4,8,16,32,64]
-neuron_count_2_vals = [4,8,16,32,64]
+neuron_count_1_vals = [4,8,16,32,64,128,256,512]
+neuron_count_2_vals = [4,8,16,32,64,128,256,512]
 for i in range(len(neuron_count_1_vals)):
     for j in range(len(neuron_count_2_vals)):
         neuron_count_1, neuron_count_2 = neuron_count_1_vals[i], neuron_count_2_vals[j]

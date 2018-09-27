@@ -34,31 +34,38 @@ def get_train_data(filename_train, maximum_RUL=99999):
     return X_train, y_train
 
 
-def get_valid_test_data(filename_valid_train, filename_RUL, window_size=4, offset=0):
+def get_valid_test_data(filename_valid_train, filename_RUL, window_size=4, maximum_RUL = 90, stop_at_RUL = 99999):
     X_valid_test = None
-    y_valid_test = None
+    y_valid_test = []
 
     with open('MachineData/' + filename_valid_train, newline='') as csvfile:
-        df = pd.read_csv(csvfile, header=None, names=range(26))
-        df_valid_test = pd.DataFrame(columns=df.columns, dtype=float)
+        with open('MachineData/' + filename_RUL, newline='') as csvfile_RUL:
+            df = pd.read_csv(csvfile, header=None, names=range(26))
+            df_valid_test = pd.DataFrame(columns=df.columns, dtype=float)
 
-        for unit_num in df[0].unique():
-            df_unit_num = df[df[0] == unit_num]
-            desired_slice = slice(df_unit_num.shape[0]-window_size-offset,df_unit_num.shape[0]-offset)
-            mean_window_series = df_unit_num.iloc[desired_slice].sum(axis='index') / window_size
-            df_valid_test = df_valid_test.append(mean_window_series, ignore_index=True)
+            df_RUL = pd.read_csv(csvfile_RUL, header=None)
 
-        df_valid_test.drop(labels=columns_to_exclude, axis='columns', inplace=True)
+            idx_RUL = 0
+            for unit_num in df[0].unique():
 
-        X_valid_test = df_valid_test.values
+                df_unit_num = df[df[0] == unit_num]
+                RUL = df_RUL.iloc[idx_RUL][0] + ((window_size-1) / 2)
 
-    with open('MachineData/' + filename_RUL, newline='') as csvfile:
-        df = pd.read_csv(csvfile, header=None)
+                for j in range(0, int(df_unit_num.shape[0] / window_size)):
+                    if j < stop_at_RUL / window_size:
+                        desired_slice = slice(df_unit_num.shape[0]-(window_size*(j+1)),df_unit_num.shape[0]-(window_size*j))
+                        mean_window_series = df_unit_num.iloc[desired_slice].sum(axis='index') / window_size
+                        df_valid_test = df_valid_test.append(mean_window_series, ignore_index=True)
 
-        y_valid_test = []
-        for row in df.itertuples():
-            y_valid_test.append(row[1] + ((window_size-1) / 2) + (max(offset,0)))
+                        y_valid_test.append(min(RUL, maximum_RUL))
+                        RUL += window_size
 
-        y_valid_test = np.array(y_valid_test)
+                idx_RUL += 1
+
+
+            df_valid_test.drop(labels=columns_to_exclude, axis='columns', inplace=True)
+
+            X_valid_test = df_valid_test.values
+            y_valid_test= np.array(y_valid_test)
 
     return X_valid_test, y_valid_test
